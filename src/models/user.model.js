@@ -25,7 +25,7 @@ const userModel = sequelize.define(
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-            field: "system_user",
+            field: "systemuser",
         },
     },
     {
