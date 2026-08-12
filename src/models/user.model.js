@@ -1,5 +1,7 @@
 const sequelize = require("../config/db");
 const { DataTypes } = require("sequelize");
+const bcrypt = require("bcrypt");
+
 const { beforeCreate, beforeUpdate} = require("./hooks/user.hooks");
 
 const userModel = sequelize.define(
@@ -37,5 +39,9 @@ const userModel = sequelize.define(
         },
     }
 );
+
+userModel.prototype.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
 
 module.exports = userModel;
