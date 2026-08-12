@@ -1,7 +1,7 @@
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const emailService = require("../services/email.service");
-const { comparePassword } = require("../services/user.service");
+
 
 /*user registration*/
 
