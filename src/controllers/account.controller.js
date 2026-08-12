@@ -1,10 +1,10 @@
 const accountModel = require("../models/account.model");
+const { getAccountBalance } = require("../services/account.service");
 
 const createAccount = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // Create a new account for the authenticated user
         const newAccount = await accountModel.create({
             userId: userId,
             status: "ACTIVE",
@@ -18,6 +18,7 @@ const createAccount = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+
         res.status(500).json({
             success: false,
             message: "Error creating account",
@@ -25,6 +26,31 @@ const createAccount = async (req, res) => {
     }
 };
 
+
+const getBalance = async (req, res) => {
+    try {
+        const accountId = req.params.accountId;
+
+        const balance = await getAccountBalance(accountId);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                balance: balance,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Error fetching account balance",
+        });
+    }
+};
+
+
 module.exports = {
     createAccount,
+    getBalance,
 };

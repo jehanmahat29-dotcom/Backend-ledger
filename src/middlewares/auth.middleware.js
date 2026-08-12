@@ -15,10 +15,7 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // Verify token
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
+        const decoded = jwt.verify( token, process.env.JWT_SECRET );
 
         // Find user using Sequelize
         const user = await userModel.findOne({
@@ -49,4 +46,19 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+const authSystemUserMiddleware = (req, res, next) => {
+
+    if (!req.user.systemUser) {
+        return res.status(403).json({
+            success: false,
+            message: "System user access required",
+        });
+    }
+
+    next();
+};
+
+module.exports = {
+    authMiddleware,
+    authSystemUserMiddleware
+};

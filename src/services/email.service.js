@@ -50,4 +50,24 @@ const sendRegistrationEmail = async (userEmail, name) => {
   await sendEmail(userEmail, subject, text, html);
 };
 
-module.exports = { sendEmail, sendRegistrationEmail };
+const sendTransactionEmail = async (userEmail, name, transactionDetails) => {
+  const subject = 'Transaction Notification from Backend Ledger';
+
+  const text = `Hello ${name},\n\nWe have received your transaction with the following details:\n\n${transactionDetails}\n\nBest regards,\nThe Backend Ledger Team`;
+
+  const html = `<p>Hello ${name},</p><p>We have received your transaction with the following details:</p><p>${transactionDetails}</p><p>Best regards,<br>The Backend Ledger Team</p>`;
+
+  await sendEmail(userEmail, subject, text, html);
+};
+
+const sendTransactionFailureEmail = async (userEmail, name, transactionDetails) => {
+  const subject = 'Transaction Failure Notification from Backend Ledger';
+
+  const text = `Hello ${name},\n\nWe have received your transaction with the following details:\n\n${transactionDetails}\n\nBest regards,\nThe Backend Ledger Team`;
+
+  const html = `<p>Hello ${name},</p><p>We have received your transaction with the following details:</p><p>${transactionDetails}</p><p>Best regards,<br>The Backend Ledger Team</p>`;
+
+  await sendEmail(userEmail, subject, text, html);
+};
+
+module.exports = { sendEmail, sendRegistrationEmail, sendTransactionEmail, sendTransactionFailureEmail };

@@ -1,6 +1,11 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
+const {
+    beforeUpdate,
+    beforeDestroy,
+} = require("./hooks/account.hooks");
+
 const accountModel = sequelize.define(
     "Accounts",
     {
@@ -41,17 +46,8 @@ const accountModel = sequelize.define(
         timestamps: true,
 
         hooks: {
-            beforeUpdate() {
-                throw new Error(
-                    "Ledger entries are immutable and cannot be modified"
-                );
-            },
-
-            beforeDestroy() {
-                throw new Error(
-                    "Ledger entries are immutable and cannot be deleted"
-                );
-            },
+            beforeUpdate,
+            beforeDestroy,
         },
     }
 );
