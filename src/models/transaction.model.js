@@ -1,12 +1,18 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-const transactionModel = sequelize.define(
-    "transactions",
+const Transaction = sequelize.define(
+    "Transaction",
     {
+        transaction_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+
         fromAccountId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: "from_account_id",
             references: {
                 model: "accounts",
@@ -16,7 +22,7 @@ const transactionModel = sequelize.define(
 
         toAccountId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             field: "to_account_id",
             references: {
                 model: "accounts",
@@ -36,18 +42,21 @@ const transactionModel = sequelize.define(
         },
 
         amount: {
-            type: DataTypes.DECIMAL(10, 2),
+            type: DataTypes.DECIMAL(15, 2),
             allowNull: false,
         },
+
         idempotencyKey: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             allowNull: false,
             unique: true,
+            field: "idempotency_key",
         },
     },
     {
+        tableName: "transactions",
         timestamps: true,
     }
 );
 
-module.exports = transactionModel;
+module.exports = Transaction;

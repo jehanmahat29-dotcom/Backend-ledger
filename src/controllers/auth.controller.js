@@ -66,7 +66,7 @@ const registerUser = async (req, res) => {
         });
 
         // Generate JWT
-        const token = jwt.sign( { userId: user.id }, process.env.JWT_SECRET, { expiresIn: "3h" });
+        const token = jwt.sign( { userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
         res.cookie("token", token, {
             httpOnly: true,

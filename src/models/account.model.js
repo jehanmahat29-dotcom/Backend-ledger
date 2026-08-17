@@ -6,8 +6,8 @@ const {
     beforeDestroy,
 } = require("./hooks/account.hooks");
 
-const accountModel = sequelize.define(
-    "Accounts",
+const Account = sequelize.define(
+    "Account",
     {
         account_id: {
             type: DataTypes.INTEGER,
@@ -19,10 +19,6 @@ const accountModel = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
             field: "user_id",
-            references: {
-                model: "users",
-                key: "id",
-            },
         },
 
         status: {
@@ -36,11 +32,12 @@ const accountModel = sequelize.define(
         },
 
         currency: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(3),
             allowNull: false,
             defaultValue: "INR",
         },
     },
+
     {
         tableName: "accounts",
         timestamps: true,
@@ -52,4 +49,4 @@ const accountModel = sequelize.define(
     }
 );
 
-module.exports = accountModel;
+module.exports = Account;

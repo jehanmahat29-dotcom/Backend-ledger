@@ -2,11 +2,20 @@ const sequelize = require("../config/db");
 const { DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 
-const { beforeCreate, beforeUpdate} = require("./hooks/user.hooks");
+const {
+    beforeCreate,
+    beforeUpdate,
+} = require("./hooks/user.hooks");
 
-const userModel = sequelize.define(
-    "users",
+const User = sequelize.define(
+    "User",
     {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+
         email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -30,7 +39,9 @@ const userModel = sequelize.define(
             field: "systemuser",
         },
     },
+
     {
+        tableName: "users",
         timestamps: true,
 
         hooks: {
@@ -40,8 +51,8 @@ const userModel = sequelize.define(
     }
 );
 
-userModel.prototype.comparePassword = async function (password) {
+User.prototype.comparePassword = async function (password) {
     return bcrypt.compare(password, this.password);
 };
 
-module.exports = userModel;
+module.exports = User;

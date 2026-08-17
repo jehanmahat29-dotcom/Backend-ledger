@@ -1,10 +1,13 @@
-const { literal } = require("sequelize");
+const { fn, col, literal } = require("sequelize");
 const ledgerModel = require("../models/ledger.model");
 
-const getAccountBalance = async (accountId) => {
-    const result = await ledgerModel.findOne({
+const getAccountBalance = async (
+    accountId,
+    transaction = null
+) => {
+    const options = {
         where: {
-            account_id: accountId,
+            accountId,
         },
 
         attributes: [
@@ -26,9 +29,15 @@ const getAccountBalance = async (accountId) => {
         ],
 
         raw: true,
-    });
+    };
 
-    return Number(result.balance);
+    if (transaction) {
+        options.transaction = transaction;
+    }
+
+    const result = await ledgerModel.findOne(options);
+
+    return Number(result?.balance || 0);
 };
 
 module.exports = {

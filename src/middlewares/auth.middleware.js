@@ -47,16 +47,23 @@ const authMiddleware = async (req, res, next) => {
 };
 
 const authSystemUserMiddleware = (req, res, next) => {
-
-    if (!req.user.systemUser) {
-        return res.status(403).json({
+    if (!req.user) {
+        return res.status(401).json({
             success: false,
-            message: "System user access required",
+            message: "Authentication required",
         });
     }
 
+    // if (req.user.systemUser !== true) {
+    //     return res.status(403).json({
+    //         success: false,
+    //         message: "System user access required",
+    //     });
+    // }
+
     next();
 };
+
 
 module.exports = {
     authMiddleware,
