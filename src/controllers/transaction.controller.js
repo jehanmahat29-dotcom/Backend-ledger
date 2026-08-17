@@ -323,77 +323,77 @@ const createTransaction = async (req, res) => {
                 }
             );
 
-    /**
- * Send transaction emails
- */
+        /**
+     * Send transaction emails
+     */
 
-try {
-    // =========================
-    // RECEIVER
-    // =========================
+        try {
+            // =========================
+            // RECEIVER
+            // =========================
 
-    const senderAccount = await accountModel.findByPk(
-        transactionRecord.fromAccountId
-    );
+            const senderAccount = await accountModel.findByPk(
+                transactionRecord.fromAccountId
+            );
 
-    if (!senderAccount) {
-        console.log("❌ Sender account not found");
-    } else {
-        const senderUser = await userModel.findByPk(
-            senderAccount.userId
-        );
+            if (!senderAccount) {
+                console.log("❌ Sender account not found");
+            } else {
+                const senderUser = await userModel.findByPk(
+                    senderAccount.userId
+                );
 
-        console.log("========== RECEIVER ==========");
-        console.log("Account ID:", senderAccount.account_id);
-        console.log("User ID:", senderAccount.userId);
-        console.log("User Email:", senderUser?.email);
-        console.log("User Name:", senderUser?.name);
+                console.log("========== RECEIVER ==========");
+                console.log("Account ID:", senderAccount.account_id);
+                console.log("User ID:", senderAccount.userId);
+                console.log("User Email:", senderUser?.email);
+                console.log("User Name:", senderUser?.name);
 
-        if (senderUser) {
-            await emailService.amountCredited(
-                senderUser.email,
-                senderUser.name,
-                transactionRecord
+                if (senderUser) {
+                    await emailService.amountCredited(
+                        senderUser.email,
+                        senderUser.name,
+                        transactionRecord
+                    );
+                }
+            }
+
+            // =========================
+            // SENDER
+            // =========================
+
+            const receiverAccount = await accountModel.findByPk(
+                transactionRecord.toAccountId
+            );
+
+            if (!receiverAccount) {
+                console.log("❌ Receiver account not found");
+            } else {
+                const receiverUser = await userModel.findByPk(
+                    receiverAccount.userId
+                );
+
+                console.log("==========SENDER ===========");
+                console.log("Account ID:", receiverAccount.account_id);
+                console.log("User ID:", receiverAccount.userId);
+                console.log("User Email:", receiverUser?.email);
+                console.log("User Name:", receiverUser?.name);
+
+                if (receiverUser) {
+                    await emailService.amountDebited(
+                        receiverUser.email,
+                        receiverUser.name,
+                        transactionRecord
+                    );
+                }
+            }
+
+        } catch (emailError) {
+            console.error(
+                "Transaction email failed:",
+                emailError
             );
         }
-    }
-
-    // =========================
-    // SENDER
-    // =========================
-
-    const receiverAccount = await accountModel.findByPk(
-        transactionRecord.toAccountId
-    );
-
-    if (!receiverAccount) {
-        console.log("❌ Receiver account not found");
-    } else {
-        const receiverUser = await userModel.findByPk(
-            receiverAccount.userId
-        );
-
-        console.log("==========SENDER ===========");
-        console.log("Account ID:", receiverAccount.account_id);
-        console.log("User ID:", receiverAccount.userId);
-        console.log("User Email:", receiverUser?.email);
-        console.log("User Name:", receiverUser?.name);
-
-        if (receiverUser) {
-            await emailService.amountDebited(
-                receiverUser.email,
-                receiverUser.name,
-                transactionRecord
-            );
-        }
-    }
-
-} catch (emailError) {
-    console.error(
-        "Transaction email failed:",
-        emailError
-    );
-}
 
         return res.status(200).json({
             success: true,
