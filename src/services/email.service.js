@@ -1,9 +1,9 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    type: 'OAuth2',
+    type: "OAuth2",
     user: process.env.EMAIL_USER,
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
@@ -14,9 +14,9 @@ const transporter = nodemailer.createTransport({
 // Verify the connection configuration
 transporter.verify((error, success) => {
   if (error) {
-    console.error('Error connecting to email server:', error);
+    console.error("Error connecting to email server:", error);
   } else {
-    console.log('Email server is ready to send messages');
+    console.log("Email server is ready to send messages");
   }
 });
 
@@ -31,15 +31,15 @@ const sendEmail = async (to, subject, text, html) => {
       html, // html body
     });
 
-    console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
   }
 };
 
 const sendRegistrationEmail = async (userEmail, name) => {
-  const subject = 'Welcome to Backend Ledger!';
+  const subject = "Welcome to Backend Ledger!";
 
   const text = `Hello ${name},\n\nThank you for registering with Backend Ledger! 
                 We're excited to have you on board.\n\nBest regards,\nThe Backend Ledger Team`;
@@ -50,8 +50,44 @@ const sendRegistrationEmail = async (userEmail, name) => {
   await sendEmail(userEmail, subject, text, html);
 };
 
-const sendTransactionEmail = async (userEmail, name, transactionDetails) => {
-  const subject = 'Transaction Notification from Backend Ledger';
+const amountCredited = async (userEmail, name, transactionDetails) => {
+  const subject = "Transaction Notification from Backend Ledger";
+
+  const message = `
+      Hello ${name},\n\n
+      Your account has been credited: ${transactionDetails.amount}\n
+      From Account     : ${transactionDetails.fromAccountId}\n
+      Best regards,\n
+      The Backend Ledger Team
+    `;
+
+  await sendEmail(userEmail, subject, message);
+};
+
+const amountDebited = async (userEmail, name, transactionDetails) => {
+  const subject = "Transaction Notification from Backend Ledger";
+
+  const message = `
+      Hello ${name},\n\n
+      We have received your transaction with the following details:\n\n
+      Transaction ID : ${transactionDetails.transaction_id}\n
+      Your account has been debited: ${transactionDetails.amount}\n
+      To Account     : ${transactionDetails.toAccountId}\n
+      Status         : ${transactionDetails.status}\n
+      Idempotency Key: ${transactionDetails.idempotencyKey}\n\n
+      Best regards,\n
+      The Backend Ledger Team
+    `;
+
+  await sendEmail(userEmail, subject, message);
+};
+
+const sendTransactionFailureEmail = async (
+  userEmail,
+  name,
+  transactionDetails,
+) => {
+  const subject = "Transaction Failure Notification from Backend Ledger";
 
   const text = `Hello ${name},\n\nWe have received your transaction with the following details:\n\n${transactionDetails}\n\nBest regards,\nThe Backend Ledger Team`;
 
@@ -60,14 +96,10 @@ const sendTransactionEmail = async (userEmail, name, transactionDetails) => {
   await sendEmail(userEmail, subject, text, html);
 };
 
-const sendTransactionFailureEmail = async (userEmail, name, transactionDetails) => {
-  const subject = 'Transaction Failure Notification from Backend Ledger';
-
-  const text = `Hello ${name},\n\nWe have received your transaction with the following details:\n\n${transactionDetails}\n\nBest regards,\nThe Backend Ledger Team`;
-
-  const html = `<p>Hello ${name},</p><p>We have received your transaction with the following details:</p><p>${transactionDetails}</p><p>Best regards,<br>The Backend Ledger Team</p>`;
-
-  await sendEmail(userEmail, subject, text, html);
+module.exports = {
+  sendEmail,
+  sendRegistrationEmail,
+  amountDebited,
+  amountCredited,
+  sendTransactionFailureEmail,
 };
-
-module.exports = { sendEmail, sendRegistrationEmail, sendTransactionEmail, sendTransactionFailureEmail };
