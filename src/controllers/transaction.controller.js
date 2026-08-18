@@ -329,7 +329,7 @@ const createTransaction = async (req, res) => {
 
         try {
             // =========================
-            // RECEIVER
+            // SENDER
             // =========================
 
             const senderAccount = await accountModel.findByPk(
@@ -343,14 +343,14 @@ const createTransaction = async (req, res) => {
                     senderAccount.userId
                 );
 
-                console.log("========== RECEIVER ==========");
+                console.log("========== SENDER ==========");
                 console.log("Account ID:", senderAccount.account_id);
                 console.log("User ID:", senderAccount.userId);
                 console.log("User Email:", senderUser?.email);
                 console.log("User Name:", senderUser?.name);
 
                 if (senderUser) {
-                    await emailService.amountCredited(
+                    await emailService.amountDebited(
                         senderUser.email,
                         senderUser.name,
                         transactionRecord
@@ -359,7 +359,7 @@ const createTransaction = async (req, res) => {
             }
 
             // =========================
-            // SENDER
+            // RECEIVER
             // =========================
 
             const receiverAccount = await accountModel.findByPk(
@@ -373,14 +373,14 @@ const createTransaction = async (req, res) => {
                     receiverAccount.userId
                 );
 
-                console.log("==========SENDER ===========");
+                console.log("==========RECEIVER ===========");
                 console.log("Account ID:", receiverAccount.account_id);
                 console.log("User ID:", receiverAccount.userId);
                 console.log("User Email:", receiverUser?.email);
                 console.log("User Name:", receiverUser?.name);
 
                 if (receiverUser) {
-                    await emailService.amountDebited(
+                    await emailService.amountCredited(
                         receiverUser.email,
                         receiverUser.name,
                         transactionRecord

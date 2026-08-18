@@ -50,20 +50,6 @@ const sendRegistrationEmail = async (userEmail, name) => {
   await sendEmail(userEmail, subject, text, html);
 };
 
-const amountCredited = async (userEmail, name, transactionDetails) => {
-  const subject = "Transaction Notification from Backend Ledger";
-
-  const message = `
-      Hello ${name},\n\n
-      Your account has been credited: ${transactionDetails.amount}\n
-      From Account     : ${transactionDetails.fromAccountId}\n
-      Best regards,\n
-      The Backend Ledger Team
-    `;
-
-  await sendEmail(userEmail, subject, message);
-};
-
 const amountDebited = async (userEmail, name, transactionDetails) => {
   const subject = "Transaction Notification from Backend Ledger";
 
@@ -72,9 +58,21 @@ const amountDebited = async (userEmail, name, transactionDetails) => {
       We have received your transaction with the following details:\n\n
       Transaction ID : ${transactionDetails.transaction_id}\n
       Your account has been debited: ${transactionDetails.amount}\n
-      To Account     : ${transactionDetails.toAccountId}\n
-      Status         : ${transactionDetails.status}\n
-      Idempotency Key: ${transactionDetails.idempotencyKey}\n\n
+      To Account     : ${transactionDetails.toAccountId}\n\n
+      Best regards,\n
+      The Backend Ledger Team
+    `;
+
+  await sendEmail(userEmail, subject, message);
+};
+
+const amountCredited = async (userEmail, name, transactionDetails) => {
+  const subject = "Transaction Notification from Backend Ledger";
+
+  const message = `
+      Hello ${name},\n\n
+      Your account has been credited: ${transactionDetails.amount}\n
+      From Account     : ${transactionDetails.fromAccountId}\n
       Best regards,\n
       The Backend Ledger Team
     `;
