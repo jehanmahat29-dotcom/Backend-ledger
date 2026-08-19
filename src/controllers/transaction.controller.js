@@ -328,9 +328,11 @@ const createTransaction = async (req, res) => {
      */
 
         try {
-            // =========================
-            // SENDER
-            // =========================
+            /* 
+            * SENDER
+            *
+            */
+
 
             const senderAccount = await accountModel.findByPk(
                 transactionRecord.fromAccountId
@@ -358,9 +360,10 @@ const createTransaction = async (req, res) => {
                 }
             }
 
-            // =========================
-            // RECEIVER
-            // =========================
+            /* 
+            * RECEIVER
+            *
+            */
 
             const receiverAccount = await accountModel.findByPk(
                 transactionRecord.toAccountId
@@ -404,7 +407,10 @@ const createTransaction = async (req, res) => {
         });
 
     } catch (error) {
-        // Unique idempotency constraint race.
+        /* 
+        *Unique idempotency constraint race.
+        *
+        */
         if (
             error.name ===
             "SequelizeUniqueConstraintError"
@@ -465,9 +471,9 @@ const createInitialFundsTransaction = async (req, res) => {
         idempotencyKey,
     } = req.body;
 
-    // -----------------------------
-    // 1. Validate request
-    // -----------------------------
+    /*
+     * Validate request
+     */
 
     if (
         accountId === undefined ||
@@ -505,10 +511,12 @@ const createInitialFundsTransaction = async (req, res) => {
         const newTransaction = await sequelize.transaction(
             async (dbTransaction) => {
 
-                // -----------------------------
-                // 2. Check idempotency INSIDE transaction
-                // -----------------------------
-
+                
+                /* 
+                * 2. Check idempotency INSIDE transaction
+                *
+                */
+                
                 const existingTransaction =
                     await transactionModel.findOne({
                         where: {
@@ -525,9 +533,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     };
                 }
 
-                // -----------------------------
-                // 3. Find system user
-                // -----------------------------
+                /*
+                * 3. Find system user
+                *
+                */
 
                 const systemUser =
                     await userModel.findOne({
@@ -547,9 +556,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     throw error;
                 }
 
-                // -----------------------------
-                // 4. Find system account
-                // -----------------------------
+                /* 
+                * 4. Find system account
+                *
+                */
 
                 const systemAccount =
                     await accountModel.findOne({
@@ -569,9 +579,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     throw error;
                 }
 
-                // -----------------------------
-                // 5. Find target account
-                // -----------------------------
+                /* 
+                * 5. Find target account
+                *
+                */
 
                 const targetAccount =
                     await accountModel.findByPk(
@@ -591,9 +602,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     throw error;
                 }
 
-                // -----------------------------
-                // 6. Validate target account
-                // -----------------------------
+                /*
+                * 6. Validate target 
+                *
+                */
 
                 if (targetAccount.status !== "ACTIVE") {
                     const error = new Error(
@@ -616,9 +628,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     throw error;
                 }
 
-                // -----------------------------
-                // 7. Prevent system → system
-                // -----------------------------
+                /* 
+                * 7. Prevent system → system
+                *
+                */
 
                 if (
                     systemAccount.account_id ===
@@ -634,6 +647,7 @@ const createInitialFundsTransaction = async (req, res) => {
 
                 /*
                 * 8. Create transaction
+                *
                 */
 
                 const transaction = await transactionModel.create({
@@ -649,9 +663,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     }
                 );
 
-                // -----------------------------
-                // 9. Debit system account
-                // -----------------------------
+                /*
+                * 9. Debit system account
+                *
+                */
 
                 await ledgerModel.create(
                     {
@@ -672,9 +687,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     }
                 );
 
-                // -----------------------------
-                // 10. Credit target account
-                // -----------------------------
+                /*
+                * 10. Credit target account
+                *
+                */
 
                 await ledgerModel.create(
                     {
@@ -695,9 +711,10 @@ const createInitialFundsTransaction = async (req, res) => {
                     }
                 );
 
-                // -----------------------------
-                // 11. Complete transaction
-                // -----------------------------
+                /*
+                * 11. Complete transaction
+                *
+                */
 
                 await transaction.update(
                     {
@@ -716,9 +733,10 @@ const createInitialFundsTransaction = async (req, res) => {
             }
         );
 
-        // -----------------------------
-        // Existing idempotent request
-        // -----------------------------
+        /*
+        * Existing idempotent request
+        *
+        */
 
         if (newTransaction.existing) {
             return res.status(200).json({
@@ -734,9 +752,10 @@ const createInitialFundsTransaction = async (req, res) => {
             });
         }
 
-        // -----------------------------
-        // New transaction
-        // -----------------------------
+        /*
+        * New transaction
+        *
+        */
 
         return res.status(201).json({
             success: true,
