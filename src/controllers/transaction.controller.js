@@ -511,12 +511,12 @@ const createInitialFundsTransaction = async (req, res) => {
         const newTransaction = await sequelize.transaction(
             async (dbTransaction) => {
 
-                
+
                 /* 
                 * 2. Check idempotency INSIDE transaction
                 *
                 */
-                
+
                 const existingTransaction =
                     await transactionModel.findOne({
                         where: {
