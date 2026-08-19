@@ -23,18 +23,36 @@ transporter.verify((error, success) => {
 // Function to send email
 const sendEmail = async (to, subject, text, html) => {
   try {
+    // console.log("========== SENDING EMAIL ==========");
+    // console.log("FROM:", process.env.EMAIL_USER);
+    // console.log("TO:", to);
+    // console.log("SUBJECT:", subject);
+    // console.log("===================================================================================================");
+
     const info = await transporter.sendMail({
-      from: `"Backend Ledger" <${process.env.EMAIL_USER}>`, // sender address
-      to, // list of receivers
-      subject, // Subject line
-      text, // plain text body
-      html, // html body
+      from: `"Backend Ledger" <${process.env.EMAIL_USER}>`,
+      to: to,
+      subject: subject,
+      text: text,
+      html: html,
     });
 
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    // console.log("========== EMAIL SENT ==========");
+    // console.log("Message ID:", info.messageId);
+    // console.log("Accepted:", info.accepted);
+    // console.log("Rejected:", info.rejected);
+    // console.log("Response:", info.response);
+    // console.log("Envelope:", info.envelope);
+    // console.log("================================");
+
+    // return info;
+
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("========== EMAIL ERROR ==========");
+    console.error(error);
+    console.error("===================================================================================================");
+
+    throw error;
   }
 };
 
