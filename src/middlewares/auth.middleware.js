@@ -54,12 +54,12 @@ const authSystemUserMiddleware = (req, res, next) => {
         });
     }
 
-    // if (req.user.systemUser !== true) {
-    //     return res.status(403).json({
-    //         success: false,
-    //         message: "System user access required",
-    //     });
-    // }
+    if (req.user.systemUser !== true) {
+        return res.status(403).json({
+            success: false,
+            message: "System user access required",
+        });
+    }
 
     next();
 };
