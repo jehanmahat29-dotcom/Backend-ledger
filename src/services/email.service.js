@@ -57,7 +57,7 @@ const amountDebited = async (userEmail, name, transactionDetails) => {
       Hello ${name},\n\n
       We have received your transaction with the following details:\n\n
       Transaction ID : ${transactionDetails.transaction_id}\n
-      Your account has been debited: ${transactionDetails.amount}\n
+      Your account has been debited: Rs.${transactionDetails.amount}\n
       To Account     : ${transactionDetails.toAccountId}\n\n
       Best regards,\n
       The Backend Ledger Team
@@ -71,7 +71,9 @@ const amountCredited = async (userEmail, name, transactionDetails) => {
 
   const message = `
       Hello ${name},\n\n
-      Your account has been credited: ${transactionDetails.amount}\n
+      We have received your transaction with the following details:\n\n
+      Transaction ID : ${transactionDetails.transaction_id}\n
+      Your account has been credited: Rs.${transactionDetails.amount}\n
       From Account     : ${transactionDetails.fromAccountId}\n
       Best regards,\n
       The Backend Ledger Team
