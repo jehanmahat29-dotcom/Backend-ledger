@@ -37,9 +37,9 @@ Transaction.belongsTo(Account, {
 });
 
 
-// --------------------------------------------------
-// Account → Received Transactions
-// --------------------------------------------------
+/**
+* Account → Received Transactions
+**/
 
 Account.hasMany(Transaction, {
     foreignKey: "toAccountId",
@@ -54,9 +54,9 @@ Transaction.belongsTo(Account, {
 });
 
 
-// --------------------------------------------------
-// Account → Ledger
-// --------------------------------------------------
+/**
+* Account → Ledger
+**/
 
 Account.hasMany(Ledger, {
     foreignKey: "accountId",
@@ -71,9 +71,9 @@ Ledger.belongsTo(Account, {
 });
 
 
-// --------------------------------------------------
-// Transaction → Ledger
-// --------------------------------------------------
+/**
+* Transaction → Ledger
+**/
 
 Transaction.hasMany(Ledger, {
     foreignKey: "transactionId",
