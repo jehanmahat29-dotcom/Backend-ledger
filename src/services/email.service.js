@@ -21,20 +21,19 @@ transporter.verify((error, success) => {
 });
 
 // Function to send email
-const sendEmail = async (to, subject, text, html) => {
+const sendEmail = async (to, subject, text, html = undefined) => {
   try {
     // console.log("========== SENDING EMAIL ==========");
     // console.log("FROM:", process.env.EMAIL_USER);
     // console.log("TO:", to);
     // console.log("SUBJECT:", subject);
-    // console.log("===================================================================================================");
 
     const info = await transporter.sendMail({
       from: `"Backend Ledger" <${process.env.EMAIL_USER}>`,
       to: to,
       subject: subject,
       text: text,
-      html: html,
+      ...(html && { html }),
     });
 
     // console.log("========== EMAIL SENT ==========");
@@ -45,12 +44,13 @@ const sendEmail = async (to, subject, text, html) => {
     // console.log("Envelope:", info.envelope);
     // console.log("================================");
 
-    // return info;
+    return info;
 
   } catch (error) {
     console.error("========== EMAIL ERROR ==========");
-    console.error(error);
-    console.error("===================================================================================================");
+    console.error("TO:", to);
+    console.error("ERROR:", error);
+    console.error("================================");
 
     throw error;
   }
@@ -65,7 +65,7 @@ const sendRegistrationEmail = async (userEmail, name) => {
   const html = `<p>Hello ${name},</p><p>Thank you for registering with <strong>Backend Ledger</strong>! 
                 We're excited to have you on board.</p><p>Best regards,<br>The Backend Ledger Team</p>`;
 
-  await sendEmail(userEmail, subject, text, html);
+  return await sendEmail(userEmail, subject, text, html);
 };
 
 const amountDebited = async (userEmail, name, transactionDetails) => {
@@ -81,7 +81,7 @@ const amountDebited = async (userEmail, name, transactionDetails) => {
       The Backend Ledger Team
     `;
 
-  await sendEmail(userEmail, subject, message);
+  return await sendEmail(userEmail, subject, message);
 };
 
 const amountCredited = async (userEmail, name, transactionDetails) => {
@@ -97,7 +97,7 @@ const amountCredited = async (userEmail, name, transactionDetails) => {
       The Backend Ledger Team
     `;
 
-  await sendEmail(userEmail, subject, message);
+  return await sendEmail(userEmail, subject, message);
 };
 
 const sendTransactionFailureEmail = async (

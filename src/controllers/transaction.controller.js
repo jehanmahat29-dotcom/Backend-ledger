@@ -324,16 +324,13 @@ const createTransaction = async (req, res) => {
             );
 
         /**
-     * Send transaction emails
-     */
+         * Send transaction emails
+         */
 
+        /**
+         * SENDER
+         */
         try {
-            /* 
-            * SENDER
-            *
-            */
-
-
             const senderAccount = await accountModel.findByPk(
                 transactionRecord.fromAccountId
             );
@@ -345,26 +342,33 @@ const createTransaction = async (req, res) => {
                     senderAccount.userId
                 );
 
-                console.log("========== SENDER ==========");
+                console.log("========== DEBITED ==========");
                 console.log("Account ID:", senderAccount.account_id);
                 console.log("User ID:", senderAccount.userId);
                 console.log("User Email:", senderUser?.email);
                 console.log("User Name:", senderUser?.name);
 
-                if (senderUser) {
-                    await emailService.amountDebited(
+                if (senderUser?.email) {
+                    const result = await emailService.amountDebited(
                         senderUser.email,
                         senderUser.name,
                         transactionRecord
                     );
+
+                    // console.log("✅ Debit email result:", result);
                 }
             }
+        } catch (emailError) {
+            console.error("❌ SENDER EMAIL FAILED");
+            console.error(emailError);
+        }
 
-            /* 
-            * RECEIVER
-            *
-            */
 
+        /**
+         * RECEIVER
+         */
+
+        try {
             const receiverAccount = await accountModel.findByPk(
                 transactionRecord.toAccountId
             );
@@ -376,26 +380,25 @@ const createTransaction = async (req, res) => {
                     receiverAccount.userId
                 );
 
-                console.log("==========RECEIVER ===========");
+                console.log("========== CREDITED ==========");
                 console.log("Account ID:", receiverAccount.account_id);
                 console.log("User ID:", receiverAccount.userId);
                 console.log("User Email:", receiverUser?.email);
                 console.log("User Name:", receiverUser?.name);
 
-                if (receiverUser) {
-                    await emailService.amountCredited(
+                if (receiverUser?.email) {
+                    const result = await emailService.amountCredited(
                         receiverUser.email,
                         receiverUser.name,
                         transactionRecord
                     );
+
+                    // console.log("✅ Credit email result:", result);
                 }
             }
-
         } catch (emailError) {
-            console.error(
-                "Transaction email failed:",
-                emailError
-            );
+            console.error("❌ RECEIVER EMAIL FAILED");
+            console.error(emailError);
         }
 
         return res.status(200).json({
