@@ -102,12 +102,11 @@ const createTransaction = async (req, res) => {
      * Check idempotency key
      */
 
-    const existingTransaction =
-        await transactionModel.findOne({
-            where: {
-                idempotencyKey,
-            },
-        });
+    const existingTransaction = await transactionModel.findOne({
+        where: {
+            idempotencyKey,
+        },
+    });
 
     if (existingTransaction) {
         return res.status(
@@ -141,41 +140,29 @@ const createTransaction = async (req, res) => {
                     /**
                      * Lock sender and receiver accounts
                      */
-
-                    const accounts =
-                        await accountModel.findAll({
-                            where: {
-                                account_id: {
-                                    [Op.in]: [
-                                        senderId,
-                                        receiverId,
-                                    ],
-                                },
+                    const accounts = await accountModel.findAll({
+                        where: {
+                            account_id: {
+                                [Op.in]: [
+                                    senderId,
+                                    receiverId,
+                                ],
                             },
+                        },
 
-                            order: [
-                                ["account_id", "ASC"],
-                            ],
+                        order: [
+                            ["account_id", "ASC"],
+                        ],
 
-                            lock:
-                                dbTransaction.LOCK.UPDATE,
+                        lock:
+                            dbTransaction.LOCK.UPDATE,
 
-                            transaction: dbTransaction,
-                        });
+                        transaction: dbTransaction,
+                    });
 
-                    const fromAccount =
-                        accounts.find(
-                            (account) =>
-                                account.account_id ===
-                                senderId
-                        );
+                    const fromAccount = accounts.find((account) => account.account_id === senderId);
 
-                    const toAccount =
-                        accounts.find(
-                            (account) =>
-                                account.account_id ===
-                                receiverId
-                        );
+                    const toAccount = accounts.find((account) => account.account_id === receiverId);
 
                     if (!fromAccount || !toAccount) {
                         const error = new Error(
@@ -225,15 +212,7 @@ const createTransaction = async (req, res) => {
                      * Validate balance
                      */
 
-                    const senderBalance =
-                        await getAccountBalance(
-                            senderId,
-                            dbTransaction
-                        );
-
-                    /**
-                     * Validate balance
-                     */
+                    const senderBalance = await getAccountBalance(senderId, dbTransaction);
 
                     if (
                         senderBalance <
@@ -251,28 +230,25 @@ const createTransaction = async (req, res) => {
                     /**
                      * Create transaction
                      */
+                    const newTransaction = await transactionModel.create(
+                        {
+                            fromAccountId:
+                                senderId,
 
-                    const newTransaction =
-                        await transactionModel.create(
-                            {
-                                fromAccountId:
-                                    senderId,
+                            toAccountId:
+                                receiverId,
 
-                                toAccountId:
-                                    receiverId,
+                            amount:
+                                transferAmount,
 
-                                amount:
-                                    transferAmount,
+                            idempotencyKey,
 
-                                idempotencyKey,
-
-                                status: "PENDING",
-                            },
-                            {
-                                transaction:
-                                    dbTransaction,
-                            }
-                        );
+                            status: "PENDING",
+                        },
+                        {
+                            transaction: dbTransaction,
+                        }
+                    );
 
 
                     /**
@@ -336,7 +312,7 @@ const createTransaction = async (req, res) => {
             );
 
             if (!senderAccount) {
-                console.log("❌ Sender account not found");
+                console.log("Sender account not found");
             } else {
                 const senderUser = await userModel.findByPk(
                     senderAccount.userId
@@ -348,18 +324,18 @@ const createTransaction = async (req, res) => {
                 console.log("User Email:", senderUser?.email);
                 console.log("User Name:", senderUser?.name);
 
-                if (senderUser?.email) {
-                    const result = await emailService.amountDebited(
-                        senderUser.email,
-                        senderUser.name,
-                        transactionRecord
-                    );
+                // if (senderUser?.email) {
+                //     const result = await emailService.amountDebited(
+                //         senderUser.email,
+                //         senderUser.name,
+                //         transactionRecord
+                //     );
 
-                    // console.log("✅ Debit email result:", result);
-                }
+                //     console.log("Debit email result:", result);
+                // }
             }
         } catch (emailError) {
-            console.error("❌ SENDER EMAIL FAILED");
+            console.error("SENDER EMAIL FAILED");
             console.error(emailError);
         }
 
@@ -386,15 +362,15 @@ const createTransaction = async (req, res) => {
                 console.log("User Email:", receiverUser?.email);
                 console.log("User Name:", receiverUser?.name);
 
-                if (receiverUser?.email) {
-                    const result = await emailService.amountCredited(
-                        receiverUser.email,
-                        receiverUser.name,
-                        transactionRecord
-                    );
+                // if (receiverUser?.email) {
+                //     const result = await emailService.amountCredited(
+                //         receiverUser.email,
+                //         receiverUser.name,
+                //         transactionRecord
+                //     );
 
-                    // console.log("Credit email result:", result);
-                }
+                //     console.log("Credit email result:", result);
+                // }
             }
         } catch (emailError) {
             console.error("RECEIVER EMAIL FAILED");
@@ -418,8 +394,7 @@ const createTransaction = async (req, res) => {
             error.name ===
             "SequelizeUniqueConstraintError"
         ) {
-            const existing =
-                await transactionModel.findOne({
+            const existing = await transactionModel.findOne({
                     where: {
                         idempotencyKey,
                     },
@@ -517,8 +492,7 @@ const createInitialFundsTransaction = async (req, res) => {
                 *
                 */
 
-                const existingTransaction =
-                    await transactionModel.findOne({
+                const existingTransaction = await transactionModel.findOne({
                         where: {
                             idempotencyKey,
                         },
@@ -538,8 +512,7 @@ const createInitialFundsTransaction = async (req, res) => {
                 *
                 */
 
-                const systemUser =
-                    await userModel.findOne({
+                const systemUser = await userModel.findOne({
                         where: {
                             systemUser: true,
                         },
@@ -561,8 +534,7 @@ const createInitialFundsTransaction = async (req, res) => {
                 *
                 */
 
-                const systemAccount =
-                    await accountModel.findOne({
+                const systemAccount = await accountModel.findOne({
                         where: {
                             userId: systemUser.id,
                         },
@@ -584,8 +556,7 @@ const createInitialFundsTransaction = async (req, res) => {
                 *
                 */
 
-                const targetAccount =
-                    await accountModel.findByPk(
+                const targetAccount = await accountModel.findByPk(
                         targetAccountId,
                         {
                             transaction: dbTransaction,
@@ -682,8 +653,7 @@ const createInitialFundsTransaction = async (req, res) => {
                         type: "DEBIT",
                     },
                     {
-                        transaction:
-                            dbTransaction,
+                        transaction: dbTransaction,
                     }
                 );
 
@@ -706,8 +676,7 @@ const createInitialFundsTransaction = async (req, res) => {
                         type: "CREDIT",
                     },
                     {
-                        transaction:
-                            dbTransaction,
+                        transaction: dbTransaction,
                     }
                 );
 
@@ -721,8 +690,7 @@ const createInitialFundsTransaction = async (req, res) => {
                         status: "COMPLETED",
                     },
                     {
-                        transaction:
-                            dbTransaction,
+                        transaction: dbTransaction,
                     }
                 );
 
