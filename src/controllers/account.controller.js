@@ -16,6 +16,7 @@ const createAccount = async (req, res) => {
             message: "Account created successfully",
             data: newAccount,
         });
+
     } catch (error) {
         console.error(error);
 
@@ -40,6 +41,7 @@ const getAllAccounts = async (req, res) => {
             success: true,
             data: accounts,
         });
+        
     } catch (error) {
         console.error(error);
 
