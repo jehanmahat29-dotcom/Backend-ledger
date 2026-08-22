@@ -290,8 +290,7 @@ const createTransaction = async (req, res) => {
                             status: "COMPLETED",
                         },
                         {
-                            transaction:
-                                dbTransaction,
+                            transaction: dbTransaction,
                         }
                     );
 
