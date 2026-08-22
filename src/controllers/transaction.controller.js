@@ -394,10 +394,10 @@ const createTransaction = async (req, res) => {
             "SequelizeUniqueConstraintError"
         ) {
             const existing = await transactionModel.findOne({
-                    where: {
-                        idempotencyKey,
-                    },
-                });
+                where: {
+                    idempotencyKey,
+                },
+            });
 
             if (existing) {
                 return res.status(200).json({
@@ -492,12 +492,12 @@ const createInitialFundsTransaction = async (req, res) => {
                 */
 
                 const existingTransaction = await transactionModel.findOne({
-                        where: {
-                            idempotencyKey,
-                        },
-                        transaction: dbTransaction,
-                        lock: dbTransaction.LOCK.UPDATE,
-                    });
+                    where: {
+                        idempotencyKey,
+                    },
+                    transaction: dbTransaction,
+                    lock: dbTransaction.LOCK.UPDATE,
+                });
 
                 if (existingTransaction) {
                     return {
@@ -512,12 +512,12 @@ const createInitialFundsTransaction = async (req, res) => {
                 */
 
                 const systemUser = await userModel.findOne({
-                        where: {
-                            systemUser: true,
-                        },
-                        transaction: dbTransaction,
-                        lock: dbTransaction.LOCK.UPDATE,
-                    });
+                    where: {
+                        systemUser: true,
+                    },
+                    transaction: dbTransaction,
+                    lock: dbTransaction.LOCK.UPDATE,
+                });
 
                 if (!systemUser) {
                     const error = new Error(
@@ -534,12 +534,12 @@ const createInitialFundsTransaction = async (req, res) => {
                 */
 
                 const systemAccount = await accountModel.findOne({
-                        where: {
-                            userId: systemUser.id,
-                        },
-                        transaction: dbTransaction,
-                        lock: dbTransaction.LOCK.UPDATE,
-                    });
+                    where: {
+                        userId: systemUser.id,
+                    },
+                    transaction: dbTransaction,
+                    lock: dbTransaction.LOCK.UPDATE,
+                });
 
                 if (!systemAccount) {
                     const error = new Error(
@@ -556,12 +556,12 @@ const createInitialFundsTransaction = async (req, res) => {
                 */
 
                 const targetAccount = await accountModel.findByPk(
-                        targetAccountId,
-                        {
-                            transaction: dbTransaction,
-                            lock: dbTransaction.LOCK.UPDATE,
-                        }
-                    );
+                    targetAccountId,
+                    {
+                        transaction: dbTransaction,
+                        lock: dbTransaction.LOCK.UPDATE,
+                    }
+                );
 
                 if (!targetAccount) {
                     const error = new Error(
