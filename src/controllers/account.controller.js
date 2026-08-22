@@ -53,22 +53,47 @@ const getAllAccounts = async (req, res) => {
 
 const getBalance = async (req, res) => {
     try {
-        const accountId = req.params.accountId;
+        const accountId = Number(req.params.accountId);
+        const userId = req.user.id;
+
+        if (!Number.isInteger(accountId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid account ID"
+            });
+        }
+
+        const account = await accountModel.findOne({
+            where: {
+                account_id: accountId,
+                userId: userId
+            }
+        });
+
+        if (!account) {
+            return res.status(404).json({
+                success: false,
+                message: "Account not found"
+            });
+        }
 
         const balance = await getAccountBalance(accountId);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
+            message: "Account balance fetched successfully",
             data: {
-                balance: balance,
-            },
+                accountId: accountId,
+                balance: balance
+            }
         });
-    } catch (error) {
-        console.error(error);
 
-        res.status(500).json({
+    } catch (error) {
+        console.error("Get balance error:", error);
+
+        return res.status(500).json({
             success: false,
-            message: "Error fetching account balance",
+            message: "Error fetching account balance"
         });
     }
 };
