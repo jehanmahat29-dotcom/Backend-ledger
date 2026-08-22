@@ -1,4 +1,4 @@
-const { fn, col, literal } = require("sequelize");
+const { literal } = require("sequelize");
 const ledgerModel = require("../models/ledger.model");
 
 const getAccountBalance = async (
