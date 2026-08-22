@@ -374,7 +374,7 @@ const createTransaction = async (req, res) => {
             );
 
             if (!receiverAccount) {
-                console.log("❌ Receiver account not found");
+                console.log("Receiver account not found");
             } else {
                 const receiverUser = await userModel.findByPk(
                     receiverAccount.userId
@@ -393,11 +393,11 @@ const createTransaction = async (req, res) => {
                         transactionRecord
                     );
 
-                    // console.log("✅ Credit email result:", result);
+                    // console.log("Credit email result:", result);
                 }
             }
         } catch (emailError) {
-            console.error("❌ RECEIVER EMAIL FAILED");
+            console.error("RECEIVER EMAIL FAILED");
             console.error(emailError);
         }
 
