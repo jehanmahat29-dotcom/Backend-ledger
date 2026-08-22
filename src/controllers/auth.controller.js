@@ -66,7 +66,7 @@ const registerUser = async (req, res) => {
         });
 
         // Generate JWT
-        const token = jwt.sign( { userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -85,7 +85,7 @@ const registerUser = async (req, res) => {
             },
             token,
         });
-        
+
         // Send registration email
         await emailService.sendRegistrationEmail(user.email, user.name);
 
@@ -154,7 +154,7 @@ const loginUser = async (req, res) => {
         }
 
         // Generate JWT
-        const token = jwt.sign( { userId: user.id }, process.env.JWT_SECRET, { expiresIn: "3h" });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "3h" });
 
         res.cookie("token", token, {
             httpOnly: true,
