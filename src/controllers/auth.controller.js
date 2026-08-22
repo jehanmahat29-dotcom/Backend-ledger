@@ -3,13 +3,19 @@ const jwt = require("jsonwebtoken");
 const emailService = require("../services/email.service");
 
 
-/*user registration*/
+/**
+ *  user registration
+ * 
+ * */
 
 const registerUser = async (req, res) => {
     try {
         let { email, password, name } = req.body;
 
-        // Check required fields
+        /**
+         *  Check required fields
+         * 
+         * */
         if (!email || !password || !name) {
             return res.status(400).json({
                 success: false,
@@ -17,11 +23,17 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Trim values
+        /**
+         *  Trim values
+         * 
+         * */
         email = email.trim().toLowerCase();
         name = name.trim();
 
-        // Email validation
+        /**
+         *  Email validation
+         * 
+         * */
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -30,7 +42,10 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Name validation
+        /**
+         *  Name validation
+         * 
+         * */
         if (name.length < 2) {
             return res.status(400).json({
                 success: false,
@@ -38,7 +53,10 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Password validation
+        /**
+         *  Password validation
+         * 
+         * */
         if (password.length < 6) {
             return res.status(400).json({
                 success: false,
@@ -46,7 +64,10 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Check if user already exists
+        /**
+         *  Check if user already exists
+         * 
+         * */
         const existingUser = await userModel.findOne({
             where: { email },
         });
@@ -58,14 +79,20 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Create user
+        /**
+         *  Create user
+         * 
+         * */
         const user = await userModel.create({
             email,
             password,
             name,
         });
 
-        // Generate JWT
+        /**
+         *  Generate JWT
+         * 
+         * */
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
         res.cookie("token", token, {
@@ -86,7 +113,10 @@ const registerUser = async (req, res) => {
             token,
         });
 
-        // Send registration email
+        /**
+         *  Send registration email
+         * 
+         * */
         await emailService.sendRegistrationEmail(user.email, user.name);
 
     } catch (error) {
@@ -100,13 +130,19 @@ const registerUser = async (req, res) => {
     }
 };
 
-/*user login*/
+/**
+ *  user login
+ * 
+ * */
 
 const loginUser = async (req, res) => {
     try {
         let { email, password } = req.body;
 
-        // Check required fields
+        /**
+         *  Check required fields
+         * 
+         * */
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -114,7 +150,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Email validation
+        /**
+         *  Email validation
+         * 
+         * */
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -123,7 +162,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Password validation
+        /**
+         *  Password validation
+         * 
+         * */
         if (password.length < 6) {
             return res.status(400).json({
                 success: false,
@@ -131,7 +173,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Check if user exists
+        /**
+         *  Check if user exists
+         * 
+         * */
         const user = await userModel.findOne({
             where: { email },
         });
@@ -143,7 +188,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Compare password
+        /**
+         *  Compare password
+         * 
+         * */
         const isPasswordValid = await user.comparePassword(password);
 
         if (!isPasswordValid) {
@@ -153,7 +201,10 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Generate JWT
+        /**
+         *  Generate JWT
+         * 
+         * */
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "3h" });
 
         res.cookie("token", token, {
