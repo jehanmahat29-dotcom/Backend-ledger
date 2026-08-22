@@ -9,6 +9,9 @@ const router = express.Router();
 /* POST /accounts - Create a new account */
 router.post( "/", authMiddleware, accountController.createAccount );
 
+/*GET /accounts/ - Get all accounts */
+router.get( "/", authMiddleware, accountController.getAllAccounts );
+
 
 /* GET /accounts/:accountId/balance - Get account balance */
 router.get( "/:accountId/balance", authMiddleware, accountController.getBalance );

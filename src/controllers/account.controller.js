@@ -26,6 +26,30 @@ const createAccount = async (req, res) => {
     }
 };
 
+const getAllAccounts = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const accounts = await accountModel.findAll({
+            where: {
+                userId: userId,
+            },
+        });
+
+        res.status(200).json({
+            success: true,
+            data: accounts,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Error fetching accounts",
+        });
+    }
+};
+
 
 const getBalance = async (req, res) => {
     try {
@@ -52,5 +76,6 @@ const getBalance = async (req, res) => {
 
 module.exports = {
     createAccount,
+    getAllAccounts,
     getBalance,
 };
