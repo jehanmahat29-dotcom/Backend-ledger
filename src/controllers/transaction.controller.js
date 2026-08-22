@@ -276,8 +276,8 @@ const createTransaction = async (req, res) => {
 
 
                     /**
-     * Create DEBIT ledger
-     */
+                     * Create DEBIT ledger
+                     */
                     await ledgerModel.create(
                         {
                             accountId: fromAccount.account_id,
